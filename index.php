@@ -11,15 +11,17 @@
     <header> 
     <h1> Hello World! </h1>
     </header>
-    <form action="#"> 
-    <input type="text" name="name" placeholder="Enter movie Name">
-    <button type="submit" id="submit">Submit</button>
+    <form action="index.php" method="post"> 
+    <input type="text" name="name" placeholder="Enter Endpoint url">
+    <button type="submit" name="submit" id="submit">Submit</button>
 
     </form>
     <?php
- 
+ require_once 'database.php';
 
- $api_url = 'http://dummy.restapiexample.com/api/v1/employees';
+ if(isset($_POST["submit"])){ 
+
+ $api_url = $_POST['name'];
  
  // Read JSON file
  $json_data = file_get_contents($api_url);
@@ -31,20 +33,25 @@
  $user_data = $response_data->data;
  
  // Cut long data into small & select only first 10 records
- $user_data = array_slice($user_data, 0, 9);
+ $user_data = array_slice($user_data, 0, 20);
  
  // Print data if need to debug
  //print_r($user_data);
  
  // Traverse array and display user data
- foreach ($user_data as $user) {
-     echo "name: ".$user->employee_name;
-     echo "<br />";
-     echo "name: ".$user->employee_age;
-     echo "<br /> <br />";
- }
+ foreach($user_data as $user){
+    $sql = "INSERT INTO empl (name, age)
+    VALUES ('$user->employee_name', '$user->employee_age')";
+    if ($conn->query($sql) === TRUE) {
+       echo "New record created successfully";
+     } else {
+       echo "Error: " . $sql . "<br>" . $conn->error;
+     }
+     
+    
+ };
  
- 
+}
 ?>
 </body>
 </html>
